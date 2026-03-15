@@ -92,7 +92,7 @@ export class RaceFormComponent implements OnInit {
       this.raceId = +id;
       this.svc.get(this.raceId).subscribe(race => {
         this.form.patchValue(race as any);
-        if (race.imagePath) this.previewUrl.set('/api/images/' + race.imagePath);
+        if (race.imagePath) this.previewUrl.set('/zelus/api/images/' + race.imagePath);
       });
     }
   }

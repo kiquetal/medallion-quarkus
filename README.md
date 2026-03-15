@@ -75,8 +75,8 @@ graph TB
 mvn quarkus:dev
 ```
 
-- App: [http://localhost:8080](http://localhost:8080)
-- Swagger UI: [http://localhost:8080/q/swagger-ui](http://localhost:8080/q/swagger-ui)
+- App: [http://localhost:8080/zelus](http://localhost:8080/zelus)
+- Swagger UI: [http://localhost:8080/zelus/q/swagger-ui](http://localhost:8080/zelus/q/swagger-ui)
 
 ## Project Structure
 

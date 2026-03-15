@@ -47,7 +47,7 @@ import { Race, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
             <tr>
               <td>
                 @if (race.imagePath) {
-                  <img [src]="'/api/images/' + race.imagePath" class="thumb" alt="medal" />
+                  <img [src]="'/zelus/api/images/' + race.imagePath" class="thumb" alt="medal" />
                 }
               </td>
               <td>{{ race.name }}</td>
