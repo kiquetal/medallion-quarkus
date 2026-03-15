@@ -72,9 +72,9 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
@@ -83,13 +83,13 @@ jobs:
       - name: Build Quarkus app
         run: mvn package -DskipTests
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           file: src/main/docker/Dockerfile.jvm
@@ -102,9 +102,9 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -126,7 +126,7 @@ jobs:
 3. Copy `.github/workflows/ghcr-build-push.yml`
 4. If the project uses a frontend (Quinoa/Angular/React), add a `setup-node` step before the Maven build:
    ```yaml
-   - uses: actions/setup-node@v4
+   - uses: actions/setup-node@v6
      with:
        node-version: 18
        cache: npm
@@ -142,3 +142,4 @@ jobs:
 - Container name defaults to the GitHub repo name; override via the `container_name` input
 - One trigger builds both amd64 and arm64 images in parallel via matrix strategy
 - The `prepare` job generates the timestamp once to guarantee consistent tags across all jobs
+- All actions use Node 24 runtime — no deprecation warnings
