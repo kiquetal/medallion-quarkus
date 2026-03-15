@@ -1,4 +1,6 @@
-# 🏅 Medallion Quarkus — Race & Medal Tracker
+# ⚡ Zelus — Race & Medal Tracker
+
+*Named after Zelus (Ζῆλος), the Greek god of rivalry, zeal, and dedication.*
 
 A full-stack personal race/medal tracker built with **Quarkus** (backend) and **Angular 19** (frontend via Quinoa), backed by **PostgreSQL**.
 
@@ -79,9 +81,9 @@ mvn quarkus:dev
 ## Project Structure
 
 ```
-medallion-quarkus/
+zelus/
 ├── pom.xml
-├── src/main/java/com/medallion/
+├── src/main/java/com/zelus/
 │   ├── entity/
 │   │   ├── Race.java            # JPA entity
 │   │   ├── RaceCategory.java    # Enum: 5K, 10K, HALF_MARATHON, ...

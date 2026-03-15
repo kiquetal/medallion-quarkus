@@ -1,4 +1,4 @@
-package com.medallion.dto;
+package com.zelus.dto;
 
 import java.util.Map;
 

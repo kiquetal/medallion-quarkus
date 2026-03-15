@@ -1,6 +1,6 @@
-package com.medallion.repository;
+package com.zelus.repository;
 
-import com.medallion.entity.Race;
+import com.zelus.entity.Race;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 

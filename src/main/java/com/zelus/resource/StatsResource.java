@@ -1,8 +1,8 @@
-package com.medallion.resource;
+package com.zelus.resource;
 
-import com.medallion.dto.StatsDTO;
-import com.medallion.entity.Race;
-import com.medallion.repository.RaceRepository;
+import com.zelus.dto.StatsDTO;
+import com.zelus.entity.Race;
+import com.zelus.repository.RaceRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

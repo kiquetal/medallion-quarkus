@@ -6,7 +6,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   imports: [RouterLink, RouterLinkActive],
   template: `
     <nav class="navbar">
-      <a class="brand" routerLink="/">🏅 Medallion</a>
+      <a class="brand" routerLink="/">⚡ Zelus</a>
       <div class="nav-links">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Races</a>
         <a routerLink="/new" routerLinkActive="active">+ New Race</a>

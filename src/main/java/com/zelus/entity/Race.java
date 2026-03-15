@@ -1,4 +1,4 @@
-package com.medallion.entity;
+package com.zelus.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Column;

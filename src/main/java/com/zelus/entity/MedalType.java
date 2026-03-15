@@ -1,4 +1,4 @@
-package com.medallion.entity;
+package com.zelus.entity;
 
 public enum MedalType {
     GOLD,

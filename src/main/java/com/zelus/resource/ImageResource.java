@@ -1,4 +1,4 @@
-package com.medallion.resource;
+package com.zelus.resource;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
