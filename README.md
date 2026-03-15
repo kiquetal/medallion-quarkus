@@ -125,6 +125,36 @@ zelus/
             └── race.model.ts
 ```
 
+## Running the Packaged App
+
+In dev mode (`mvn quarkus:dev`), PostgreSQL starts automatically via Dev Services. To run the packaged jar, you need a real database. A `docker-compose.yml` is included for this purpose.
+
+```bash
+# 1. Start PostgreSQL
+docker compose up -d
+
+# 2. Build the app (if not already built)
+mvn package -DskipTests
+
+# 3. Run the jar with datasource config
+java \
+  -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/zelus \
+  -Dquarkus.datasource.username=zelus \
+  -Dquarkus.datasource.password=zelus \
+  -jar target/quarkus-app/quarkus-run.jar
+
+# 4. Open http://localhost:8080/zelus/
+
+# 5. Stop everything when done
+docker compose down
+```
+
+### Why this works without a shared Docker network
+
+The Java app runs directly on the host, not inside a container. The `docker-compose.yml` publishes PostgreSQL's port via `ports: "5432:5432"`, which maps the container's port to `localhost:5432` on the host. The JVM connects to `localhost:5432`, Docker forwards the traffic into the PostgreSQL container — no shared Docker network needed.
+
+If the app were also containerized, `localhost` would resolve to the app's own container, not the database. In that case you'd need both services in the same compose file and use the service name (`db`) as the hostname instead.
+
 ## API Endpoints
 
 | Method | Path                  | Description                     |
