@@ -8,49 +8,7 @@ Track your races, upload medal photos, filter/sort/search your collection, and v
 
 ## Architecture
 
-```mermaid
-graph TB
-    Browser["🌐 Browser"]
-
-    subgraph "Quarkus Application"
-        Quinoa["Quinoa Extension<br/>Serves Angular SPA"]
-
-        subgraph "Angular 19 Frontend"
-            Nav[NavBar Component]
-            RLC[RaceList Component<br/>Table + Filter/Sort/Search]
-            RFC[RaceForm Component<br/>Create/Edit + Image Upload]
-            DC[Dashboard Component<br/>ngx-charts Visualizations]
-            RS[RaceService<br/>HttpClient → /api/*]
-        end
-
-        subgraph "REST API — /api"
-            RR["RaceResource<br/>Auto-generated CRUD<br/>GET/POST/PUT/DELETE /races"]
-            IR["ImageResource<br/>POST /images<br/>GET /images/{filename}"]
-            SR["StatsResource<br/>GET /stats"]
-        end
-
-        subgraph "Persistence"
-            RE["Race Entity<br/>PanacheEntity"]
-            RRepo["RaceRepository<br/>PanacheRepository"]
-        end
-    end
-
-    PG[("PostgreSQL<br/>(Dev Services)")]
-
-    Browser --> Quinoa
-    Quinoa --> Nav
-    RLC --> RS
-    RFC --> RS
-    DC --> RS
-    RS --> RR
-    RS --> IR
-    RS --> SR
-    RR --> RRepo
-    SR --> RRepo
-    RRepo --> RE
-    RE --> PG
-    IR -.-> |"File System"| FS[("uploads/")]
-```
+![Architecture Diagram](docs/architecture.png)
 
 ## Tech Stack
 
