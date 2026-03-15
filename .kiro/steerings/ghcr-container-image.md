@@ -5,10 +5,12 @@ Reusable CI setup for building a Quarkus JVM container image and pushing it to G
 ## Tag Convention
 
 ```
-ghcr.io/<owner>/<container-name>:<YYYYMMDDTHHmmss>-<arch>
+ghcr.io/<owner>/<container-name>:<YYYYMMDDHHmmss>-<arch>   # arch-specific
+ghcr.io/<owner>/<container-name>:<YYYYMMDDHHmmss>           # multi-arch manifest
+ghcr.io/<owner>/<container-name>:latest                     # always points to newest
 ```
 
-Each build produces an immutable, traceable tag. Never use `latest`.
+A `prepare` job generates the timestamp once; all downstream jobs reference it so tags are consistent. The `create-manifest` job combines both arch-specific images into a single multi-arch tag and updates `latest`.
 
 ## Required Files
 
@@ -46,7 +48,21 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - name: Generate shared tag
+        id: meta
+        run: |
+          NAME="${{ inputs.container_name || github.event.repository.name }}"
+          echo "image=${{ env.REGISTRY }}/${{ github.repository_owner }}/${NAME}" >> "$GITHUB_OUTPUT"
+          echo "tag=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
   build-and-push:
+    needs: prepare
     runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     strategy:
       matrix:
@@ -67,15 +83,6 @@ jobs:
       - name: Build Quarkus app
         run: mvn package -DskipTests
 
-      - name: Generate image tag
-        id: meta
-        run: |
-          NAME="${{ inputs.container_name || github.event.repository.name }}"
-          TAG="$(date -u +%Y%m%dT%H%M%S)-${{ matrix.arch }}"
-          IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${NAME}"
-          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -87,7 +94,29 @@ jobs:
           context: .
           file: src/main/docker/Dockerfile.jvm
           push: true
-          tags: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+          tags: ${{ needs.prepare.outputs.image }}:${{ needs.prepare.outputs.tag }}-${{ matrix.arch }}
+
+  create-manifest:
+    needs: [prepare, build-and-push]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push multi-arch manifest
+        run: |
+          IMAGE="${{ needs.prepare.outputs.image }}"
+          TAG="${{ needs.prepare.outputs.tag }}"
+          docker buildx imagetools create -t ${IMAGE}:${TAG} -t ${IMAGE}:latest \
+            ${IMAGE}:${TAG}-amd64 \
+            ${IMAGE}:${TAG}-arm64
 ```
 
 ## Adapting to a New Project
@@ -112,3 +141,4 @@ jobs:
 - The workflow expects `mvn package` to produce `target/quarkus-app/` (standard Quarkus fast-jar)
 - Container name defaults to the GitHub repo name; override via the `container_name` input
 - One trigger builds both amd64 and arm64 images in parallel via matrix strategy
+- The `prepare` job generates the timestamp once to guarantee consistent tags across all jobs
