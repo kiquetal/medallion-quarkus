@@ -78,6 +78,18 @@ mvn quarkus:dev
 - App: [http://localhost:8080/zelus](http://localhost:8080/zelus)
 - Swagger UI: [http://localhost:8080/zelus/q/swagger-ui](http://localhost:8080/zelus/q/swagger-ui)
 
+## Dev Notes
+
+### Root Path & Vite HMR
+
+The app is served under `/zelus` via `quarkus.http.root-path=/zelus`. This creates two dev-mode challenges:
+
+1. **Vite HMR injection** — Angular 19 uses Vite under the hood. In dev mode, Vite injects `<script src="/@vite/client">` as an absolute path, which resolves to `http://localhost:8080/@vite/client` (outside `/zelus`). Fix: `ng serve --serve-path /zelus/` in `package.json` makes Vite inject `/zelus/@vite/client` instead.
+
+2. **Trailing slash redirect** — Quarkus returns 404 for `/zelus` (no trailing slash) while `/zelus/` works. This is a [known Quarkus bug](https://github.com/quarkusio/quarkus/issues/35076). Fix: `TrailingSlashRedirect.java` uses `@Observes Filters` (fires before root-path routing) to 301 redirect `/zelus` → `/zelus/`.
+
+Neither issue affects production builds — Quinoa serves static files directly with no Vite injection.
+
 ## Project Structure
 
 ```
@@ -93,7 +105,8 @@ zelus/
 │   ├── resource/
 │   │   ├── RaceResource.java    # Auto-generated CRUD interface
 │   │   ├── ImageResource.java   # Image upload/serve
-│   │   └── StatsResource.java   # Aggregated stats
+│   │   ├── StatsResource.java   # Aggregated stats
+│   │   └── TrailingSlashRedirect.java  # /zelus → /zelus/ redirect
 │   └── dto/
 │       └── StatsDTO.java
 ├── src/main/resources/
