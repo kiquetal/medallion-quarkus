@@ -37,14 +37,6 @@ name: Build & Push to GHCR
 on:
   workflow_dispatch:
     inputs:
-      arch:
-        description: "Target architecture"
-        required: true
-        type: choice
-        options:
-          - amd64
-          - arm64
-        default: amd64
       container_name:
         description: "Container image name (default: repo name)"
         required: false
@@ -55,7 +47,10 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: ${{ inputs.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     permissions:
       contents: read
       packages: write
@@ -76,7 +71,7 @@ jobs:
         id: meta
         run: |
           NAME="${{ inputs.container_name || github.event.repository.name }}"
-          TAG="$(date -u +%Y%m%dT%H%M%S)-${{ inputs.arch }}"
+          TAG="$(date -u +%Y%m%dT%H%M%S)-${{ matrix.arch }}"
           IMAGE="${{ env.REGISTRY }}/${{ github.repository_owner }}/${NAME}"
           echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
@@ -116,3 +111,4 @@ jobs:
 - ARM builds use `ubuntu-24.04-arm` GitHub-hosted runners (public preview)
 - The workflow expects `mvn package` to produce `target/quarkus-app/` (standard Quarkus fast-jar)
 - Container name defaults to the GitHub repo name; override via the `container_name` input
+- One trigger builds both amd64 and arm64 images in parallel via matrix strategy
