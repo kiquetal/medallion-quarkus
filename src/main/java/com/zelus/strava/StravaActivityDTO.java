@@ -1,6 +1,7 @@
 package com.zelus.strava;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,6 +19,6 @@ public class StravaActivityDTO {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class MapDTO {
-        @JsonProperty("summary_polyline") public String summaryPolyline;
+        @JsonProperty("summary_polyline") @JsonAlias("summaryPolyline") public String summaryPolyline;
     }
 }
