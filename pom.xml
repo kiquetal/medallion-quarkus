@@ -56,6 +56,18 @@
             <version>${quarkus-quinoa.version}</version>
         </dependency>
 
+        <!-- REST Client (for calling Strava API) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-client-jackson</artifactId>
+        </dependency>
+
+        <!-- Scheduler (daily Strava sync) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-scheduler</artifactId>
+        </dependency>
+
         <!-- OpenAPI + Swagger UI -->
         <dependency>
             <groupId>io.quarkus</groupId>

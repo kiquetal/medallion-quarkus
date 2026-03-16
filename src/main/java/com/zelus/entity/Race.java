@@ -31,4 +31,9 @@ public class Race extends PanacheEntity {
     public String notes;
 
     public String imagePath;
+
+    public Long stravaActivityId;
+
+    @Column(length = 10000)
+    public String stravaPolyline;
 }
