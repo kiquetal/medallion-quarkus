@@ -5,7 +5,7 @@ import { DecimalPipe, SlicePipe } from '@angular/common';
 import { RaceService } from '../../services/race.service';
 import { StravaService } from '../../services/strava.service';
 import { StravaActivity } from '../../models/strava.model';
-import { RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
+import { ACTIVITY_TYPES, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
 import { switchMap, of } from 'rxjs';
 
 @Component({
@@ -13,8 +13,15 @@ import { switchMap, of } from 'rxjs';
   imports: [ReactiveFormsModule, DecimalPipe, SlicePipe],
   template: `
     <div class="container">
-      <h2>{{ isEdit() ? 'Edit Race' : 'New Race' }}</h2>
+      <h2>{{ isEdit() ? 'Edit Activity' : 'New Activity' }}</h2>
       <form [formGroup]="form" (ngSubmit)="save()">
+        <label>Type
+          <select formControlName="activityType">
+            @for (t of activityTypes; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+        </label>
         <label>Name <input formControlName="name" /></label>
         <label>Date <input type="date" formControlName="raceDate" /></label>
         <label>Distance (km) <input type="number" step="0.01" formControlName="distance" /></label>
@@ -27,13 +34,15 @@ import { switchMap, of } from 'rxjs';
             }
           </select>
         </label>
-        <label>Medal Type
-          <select formControlName="medalType">
-            @for (m of medalTypes; track m.value) {
-              <option [value]="m.value">{{ m.label }}</option>
-            }
-          </select>
-        </label>
+        @if (form.get('activityType')?.value === 'RACE') {
+          <label>Medal Type
+            <select formControlName="medalType">
+              @for (m of medalTypes; track m.value) {
+                <option [value]="m.value">{{ m.label }}</option>
+              }
+            </select>
+          </label>
+        }
         <label>Notes <textarea formControlName="notes" rows="3"></textarea></label>
         <label>Medal Photo
           <input type="file" accept="image/*" (change)="onFileSelected($event)" />
@@ -79,6 +88,7 @@ export class RaceFormComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
+  activityTypes = ACTIVITY_TYPES;
   categories = RACE_CATEGORIES;
   medalTypes = MEDAL_TYPES;
   isEdit = signal(false);
@@ -94,6 +104,7 @@ export class RaceFormComponent implements OnInit {
     distance: [0],
     finishTime: [''],
     location: [''],
+    activityType: ['RACE'],
     category: ['FIVE_K'],
     medalType: ['NONE'],
     notes: [''],
@@ -135,6 +146,7 @@ export class RaceFormComponent implements OnInit {
       switchMap((result: { filename: string } | null) => {
         const val = { ...this.form.value } as any;
         if (result) val.imagePath = result.filename;
+        if (val.activityType !== 'RACE') val.medalType = null;
         return this.isEdit()
           ? this.svc.update(this.raceId, val)
           : this.svc.create(val);

@@ -5,6 +5,7 @@ export interface Race {
   distance: number;
   finishTime: string;
   location: string;
+  activityType: ActivityType;
   category: RaceCategory;
   medalType: MedalType;
   notes?: string;
@@ -13,8 +14,15 @@ export interface Race {
   stravaPolyline?: string;
 }
 
+export type ActivityType = 'RACE' | 'RUN' | 'RIDE';
 export type RaceCategory = 'FIVE_K' | 'TEN_K' | 'HALF_MARATHON' | 'MARATHON' | 'TRIATHLON' | 'ULTRA' | 'OTHER';
 export type MedalType = 'GOLD' | 'SILVER' | 'BRONZE' | 'FINISHER' | 'NONE';
+
+export const ACTIVITY_TYPES: { value: ActivityType; label: string }[] = [
+  { value: 'RACE', label: '🏁 Race' },
+  { value: 'RUN', label: '🏃 Run' },
+  { value: 'RIDE', label: '🚴 Ride' },
+];
 
 export const RACE_CATEGORIES: { value: RaceCategory; label: string }[] = [
   { value: 'FIVE_K', label: '5K' },
@@ -40,4 +48,5 @@ export interface Stats {
   racesPerCategory: Record<string, number>;
   racesPerYear: Record<string, number>;
   medalsByType: Record<string, number>;
+  perActivityType: Record<string, number>;
 }

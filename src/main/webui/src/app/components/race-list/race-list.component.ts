@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RaceService } from '../../services/race.service';
-import { Race, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
+import { Race, ACTIVITY_TYPES, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
 import { RouteMapComponent } from '../route-map/route-map.component';
 
 @Component({
@@ -10,10 +10,16 @@ import { RouteMapComponent } from '../route-map/route-map.component';
   imports: [RouterLink, FormsModule, RouteMapComponent],
   template: `
     <div class="container">
-      <h2>My Races</h2>
+      <h2>My Activities</h2>
 
       <div class="filters">
         <input type="text" placeholder="Search by name..." [ngModel]="searchName()" (ngModelChange)="searchName.set($event); load()" />
+        <select [ngModel]="filterActivityType()" (ngModelChange)="filterActivityType.set($event); load()">
+          <option value="">All Types</option>
+          @for (t of activityTypes; track t.value) {
+            <option [value]="t.value">{{ t.label }}</option>
+          }
+        </select>
         <select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event); load()">
           <option value="">All Categories</option>
           @for (c of categories; track c.value) {
@@ -51,6 +57,7 @@ import { RouteMapComponent } from '../route-map/route-map.component';
                   <img [src]="'/zelus/api/images/' + race.imagePath" class="thumb" alt="medal" />
                 }
               </td>
+              <td>{{ activityTypeLabel(race.activityType) }}</td>
               <td>{{ race.name }}</td>
               <td>{{ race.raceDate }}</td>
               <td>{{ race.distance }} km</td>
@@ -73,7 +80,7 @@ import { RouteMapComponent } from '../route-map/route-map.component';
               </tr>
             }
           } @empty {
-            <tr><td [attr.colspan]="columns.length + 2" class="empty">No races found.</td></tr>
+            <tr><td [attr.colspan]="columns.length + 2" class="empty">No activities found.</td></tr>
           }
         </tbody>
       </table>
@@ -113,12 +120,15 @@ export class RaceListComponent implements OnInit {
   sortField = signal('raceDate');
   sortDir = signal<'asc' | 'desc'>('desc');
   searchName = signal('');
+  filterActivityType = signal('');
   filterCategory = signal('');
   filterMedal = signal('');
 
+  activityTypes = ACTIVITY_TYPES;
   categories = RACE_CATEGORIES;
   medalTypes = MEDAL_TYPES;
   columns = [
+    { field: 'activityType', label: 'Type' },
     { field: 'name', label: 'Name' },
     { field: 'raceDate', label: 'Date' },
     { field: 'distance', label: 'Distance' },
@@ -133,6 +143,7 @@ export class RaceListComponent implements OnInit {
     const sort = (this.sortDir() === 'desc' ? '-' : '') + this.sortField();
     this.svc.list({
       page: this.page(), size: this.pageSize(), sort,
+      activityType: this.filterActivityType() || undefined,
       category: this.filterCategory() || undefined,
       medalType: this.filterMedal() || undefined,
       name: this.searchName() || undefined,
@@ -155,6 +166,7 @@ export class RaceListComponent implements OnInit {
     }
   }
 
+  activityTypeLabel(val: string) { return this.activityTypes.find(t => t.value === val)?.label ?? val ?? ''; }
   categoryLabel(val: string) { return this.categories.find(c => c.value === val)?.label ?? val; }
-  medalLabel(val: string) { return this.medalTypes.find(m => m.value === val)?.label ?? val; }
+  medalLabel(val: string) { return this.medalTypes.find(m => m.value === val)?.label ?? val ?? ''; }
 }
