@@ -11,6 +11,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Races</a>
         <a routerLink="/new" routerLinkActive="active">+ New Race</a>
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/strava" routerLinkActive="active">Strava</a>
       </div>
     </nav>
   `,
