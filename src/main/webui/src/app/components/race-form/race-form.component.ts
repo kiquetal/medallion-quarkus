@@ -1,13 +1,16 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { DecimalPipe, SlicePipe } from '@angular/common';
 import { RaceService } from '../../services/race.service';
+import { StravaService } from '../../services/strava.service';
+import { StravaActivity } from '../../models/strava.model';
 import { RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
 import { switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-race-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DecimalPipe, SlicePipe],
   template: `
     <div class="container">
       <h2>{{ isEdit() ? 'Edit Race' : 'New Race' }}</h2>
@@ -35,6 +38,16 @@ import { switchMap, of } from 'rxjs';
         <label>Medal Photo
           <input type="file" accept="image/*" (change)="onFileSelected($event)" />
         </label>
+        @if (stravaActivities().length) {
+          <label>Link Strava Activity
+            <select [value]="form.get('stravaActivityId')?.value || ''" (change)="onStravaSelect($event)">
+              <option value="">— None —</option>
+              @for (a of stravaActivities(); track a.id) {
+                <option [value]="a.id">{{ a.startDateLocal | slice:0:10 }} — {{ a.name }} ({{ a.distance / 1000 | number:'1.1-1' }} km)</option>
+              }
+            </select>
+          </label>
+        }
         @if (previewUrl()) {
           <img [src]="previewUrl()" class="preview" alt="preview" />
         }
@@ -61,6 +74,7 @@ import { switchMap, of } from 'rxjs';
 })
 export class RaceFormComponent implements OnInit {
   private svc = inject(RaceService);
+  private stravaSvc = inject(StravaService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private fb = inject(FormBuilder);
@@ -71,6 +85,7 @@ export class RaceFormComponent implements OnInit {
   saving = signal(false);
   previewUrl = signal<string | null>(null);
   selectedFile: File | null = null;
+  stravaActivities = signal<StravaActivity[]>([]);
   private raceId = 0;
 
   form = this.fb.group({
@@ -83,9 +98,14 @@ export class RaceFormComponent implements OnInit {
     medalType: ['NONE'],
     notes: [''],
     imagePath: [''],
+    stravaActivityId: [null as number | null],
+    stravaPolyline: [''],
   });
 
   ngOnInit() {
+    this.stravaSvc.getStatus().subscribe(s => {
+      if (s.connected) this.stravaSvc.getActivities().subscribe(a => this.stravaActivities.set(a));
+    });
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEdit.set(true);
@@ -126,4 +146,17 @@ export class RaceFormComponent implements OnInit {
   }
 
   cancel() { this.router.navigate(['/']); }
+
+  onStravaSelect(event: Event) {
+    const id = +(event.target as HTMLSelectElement).value;
+    if (!id) {
+      this.form.patchValue({ stravaActivityId: null, stravaPolyline: '' });
+      return;
+    }
+    const activity = this.stravaActivities().find(a => a.id === id);
+    this.form.patchValue({
+      stravaActivityId: id,
+      stravaPolyline: activity?.map?.summaryPolyline || ''
+    });
+  }
 }

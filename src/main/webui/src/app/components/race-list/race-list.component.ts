@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RaceService } from '../../services/race.service';
 import { Race, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
+import { RouteMapComponent } from '../route-map/route-map.component';
 
 @Component({
   selector: 'app-race-list',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, RouteMapComponent],
   template: `
     <div class="container">
       <h2>My Races</h2>
@@ -59,8 +60,18 @@ import { Race, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
               <td class="actions">
                 <a [routerLink]="['/edit', race.id]" class="btn btn-sm">Edit</a>
                 <button class="btn btn-sm btn-danger" (click)="remove(race)">Delete</button>
+                @if (race.stravaActivityId) {
+                  <a [href]="'https://www.strava.com/activities/' + race.stravaActivityId" target="_blank" class="btn btn-sm btn-strava">Strava ↗</a>
+                }
               </td>
             </tr>
+            @if (race.stravaPolyline) {
+              <tr>
+                <td [attr.colspan]="columns.length + 2">
+                  <app-route-map [polyline]="race.stravaPolyline" />
+                </td>
+              </tr>
+            }
           } @empty {
             <tr><td [attr.colspan]="columns.length + 2" class="empty">No races found.</td></tr>
           }
@@ -86,6 +97,7 @@ import { Race, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
     .actions { display: flex; gap: 0.4rem; }
     .btn { padding: 0.3rem 0.7rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 0.85rem; background: #16213e; color: #fff; }
     .btn-danger { background: #c0392b; }
+    .btn-strava { background: #fc4c02; }
     .pagination { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; justify-content: center; }
     .pagination button { padding: 0.4rem 1rem; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; background: #fff; }
     .pagination button:disabled { opacity: 0.4; cursor: default; }

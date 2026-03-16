@@ -9,6 +9,8 @@ export interface Race {
   medalType: MedalType;
   notes?: string;
   imagePath?: string;
+  stravaActivityId?: number;
+  stravaPolyline?: string;
 }
 
 export type RaceCategory = 'FIVE_K' | 'TEN_K' | 'HALF_MARATHON' | 'MARATHON' | 'TRIATHLON' | 'ULTRA' | 'OTHER';
