@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.Context;
 
 import java.net.URI;
 import java.util.List;
@@ -34,10 +36,11 @@ public class StravaResource {
     }
 
     @GET @Path("/callback")
-    public Response callback(@QueryParam("code") String code, @QueryParam("scope") String scope) {
+    public Response callback(@QueryParam("code") String code, @QueryParam("scope") String scope, @Context UriInfo uriInfo) {
         stravaService.exchangeCode(code);
         stravaService.syncData();
-        return Response.temporaryRedirect(URI.create("/zelus/strava")).build();
+        URI redirect = uriInfo.getBaseUri().resolve("../strava");
+        return Response.temporaryRedirect(redirect).build();
     }
 
     @GET @Path("/status")
