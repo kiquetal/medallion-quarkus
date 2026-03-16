@@ -89,6 +89,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "allowedHosts": ["localhost","localhost.local"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "zelus:build:production"
