@@ -23,7 +23,7 @@ INSERT INTO race (id, name, raceDate, distance, finishTime, location, activityTy
 VALUES (nextval('Race_SEQ'), 'Weekend Long Run', '2024-09-14', 18.0, '1:35:00', 'Denver, CO', 'RUN', 'HALF_MARATHON', null, 'Marathon training', null);
 
 INSERT INTO race (id, name, raceDate, distance, finishTime, location, activityType, category, medalType, notes, imagePath)
-VALUES (nextval('Race_SEQ'), 'Cherry Creek Trail Ride', '2024-09-12', 45.0, '1:48:00', 'Denver, CO', 'RIDE', 'OTHER', null, 'Great fall weather', null);
+VALUES (nextval('Race_SEQ'), 'Cherry Creek Trail Ride', '2024-09-12', 45.0, '1:48:00', 'Denver, CO', 'RIDE', 'MEDIUM_RIDE', null, 'Great fall weather', null);
 
 INSERT INTO race (id, name, raceDate, distance, finishTime, location, activityType, category, medalType, notes, imagePath)
-VALUES (nextval('Race_SEQ'), 'Lookout Mountain Climb', '2024-09-15', 62.0, '2:45:00', 'Golden, CO', 'RIDE', 'OTHER', null, '1200m elevation gain', null);
+VALUES (nextval('Race_SEQ'), 'Lookout Mountain Climb', '2024-09-15', 62.0, '2:45:00', 'Golden, CO', 'RIDE', 'MEDIUM_RIDE', null, '1200m elevation gain', null);

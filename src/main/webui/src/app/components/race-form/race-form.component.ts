@@ -5,7 +5,7 @@ import { DecimalPipe, SlicePipe } from '@angular/common';
 import { RaceService } from '../../services/race.service';
 import { StravaService } from '../../services/strava.service';
 import { StravaActivity } from '../../models/strava.model';
-import { ACTIVITY_TYPES, RACE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
+import { ACTIVITY_TYPES, RACE_CATEGORIES, RUN_CATEGORIES, RIDE_CATEGORIES, MEDAL_TYPES } from '../../models/race.model';
 import { switchMap, of } from 'rxjs';
 
 @Component({
@@ -89,7 +89,7 @@ export class RaceFormComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   activityTypes = ACTIVITY_TYPES;
-  categories = RACE_CATEGORIES;
+  categories = RUN_CATEGORIES;
   medalTypes = MEDAL_TYPES;
   isEdit = signal(false);
   saving = signal(false);
@@ -114,6 +114,10 @@ export class RaceFormComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.form.get('activityType')!.valueChanges.subscribe(type => {
+      this.categories = type === 'RIDE' ? RIDE_CATEGORIES : RUN_CATEGORIES;
+      this.form.patchValue({ category: this.categories[0].value });
+    });
     this.stravaSvc.getStatus().subscribe(s => {
       if (s.connected) this.stravaSvc.getActivities().subscribe(a => this.stravaActivities.set(a));
     });
@@ -122,6 +126,7 @@ export class RaceFormComponent implements OnInit {
       this.isEdit.set(true);
       this.raceId = +id;
       this.svc.get(this.raceId).subscribe(race => {
+        if (race.activityType === 'RIDE') this.categories = RIDE_CATEGORIES;
         this.form.patchValue(race as any);
         if (race.imagePath) this.previewUrl.set('/zelus/api/images/' + race.imagePath);
       });
