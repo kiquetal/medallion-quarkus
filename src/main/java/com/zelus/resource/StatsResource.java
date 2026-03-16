@@ -44,6 +44,10 @@ public class StatsResource {
                 .filter(r -> r.medalType != null)
                 .collect(Collectors.groupingBy(r -> r.medalType.name(), Collectors.counting()));
 
-        return new StatsDTO(totalRaces, totalDistance, racesPerCategory, racesPerYear, medalsByType);
+        Map<String, Long> perActivityType = races.stream()
+                .filter(r -> r.activityType != null)
+                .collect(Collectors.groupingBy(r -> r.activityType.name(), Collectors.counting()));
+
+        return new StatsDTO(totalRaces, totalDistance, racesPerCategory, racesPerYear, medalsByType, perActivityType);
     }
 }

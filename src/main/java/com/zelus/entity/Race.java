@@ -1,10 +1,8 @@
 package com.zelus.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 @Entity
@@ -20,6 +18,9 @@ public class Race extends PanacheEntity {
     public String finishTime;
 
     public String location;
+
+    @Enumerated(EnumType.STRING)
+    public ActivityType activityType;
 
     @Enumerated(EnumType.STRING)
     public RaceCategory category;

@@ -7,5 +7,6 @@ public record StatsDTO(
         double totalDistance,
         Map<String, Long> racesPerCategory,
         Map<String, Long> racesPerYear,
-        Map<String, Long> medalsByType
+        Map<String, Long> medalsByType,
+        Map<String, Long> perActivityType
 ) {}
