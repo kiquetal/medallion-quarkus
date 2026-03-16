@@ -10,6 +10,10 @@ Track your races, upload medal photos, filter/sort/search your collection, and v
 
 ![Architecture Diagram](docs/architecture.png)
 
+![Database Schema](docs/database-schema.png)
+
+![Strava Integration Sequence](docs/strava-sequence.png)
+
 ## Tech Stack
 
 | Layer     | Technology                                      |
