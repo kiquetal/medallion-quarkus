@@ -126,6 +126,13 @@ If the app were also containerized, `localhost` would resolve to the app's own c
 | POST   | /api/images           | Upload medal image              |
 | GET    | /api/images/{filename}| Serve medal image               |
 | GET    | /api/stats            | Get aggregated statistics       |
+| POST   | /api/strava/config    | Save Strava API credentials     |
+| GET    | /api/strava/authorize | Redirect to Strava OAuth        |
+| GET    | /api/strava/callback  | OAuth callback (exchanges code) |
+| GET    | /api/strava/status    | Strava connection status        |
+| GET    | /api/strava/data      | Cached Strava data              |
+| GET    | /api/strava/activities| Cached Strava activities list   |
+| DELETE | /api/strava/disconnect| Disconnect from Strava          |
 
 ### Query Parameters (GET /api/races)
 

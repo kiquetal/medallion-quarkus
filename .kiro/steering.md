@@ -35,3 +35,14 @@ When using `quarkus.http.root-path` with a non-root value (e.g. `/zelus`), the f
 - `@Observes Router` registers routes on the sub-router at `/zelus`, not the main HTTP router
 - `@Observes Filters` registers filters at the HTTP level before root-path routing — use this for root-level interception
 - `@RouteFilter` (from quarkus-reactive-routes) is also scoped under root-path — does NOT help for root-level paths
+
+## Strava Integration
+- OAuth2 flow: `/api/strava/authorize` → Strava consent → `/api/strava/callback` → token exchange → redirect to `/zelus/strava`
+- Strava credentials (client_id, client_secret) and tokens stored in `StravaToken` entity (single row)
+- Cached API responses stored in `StravaCache` entity (JSON blobs)
+- Token auto-refresh: checked before each API call, refreshed if within 5 min of expiry
+- Daily sync via `StravaSyncJob` (`@Scheduled` cron at 3 AM)
+- `StravaClient` is a `@RegisterRestClient` interface configured with `quarkus.rest-client.strava-api.url=https://www.strava.com`
+- Race entity has optional `stravaActivityId` and `stravaPolyline` fields for linking to Strava activities
+- Frontend uses Leaflet to render route polylines — CSS loaded via angular.json, no API key needed
+- Strava callback redirect URI: `http://localhost:8080/zelus/api/strava/callback` (update for production)
