@@ -70,9 +70,12 @@ import { RouteMapComponent } from '../route-map/route-map.component';
                 @if (race.stravaActivityId) {
                   <a [href]="'https://www.strava.com/activities/' + race.stravaActivityId" target="_blank" class="btn btn-sm btn-strava">Strava ↗</a>
                 }
+                @if (race.stravaPolyline) {
+                  <button class="btn btn-sm btn-map" (click)="toggleMap(race.id!)">🗺️ Map</button>
+                }
               </td>
             </tr>
-            @if (race.stravaPolyline) {
+            @if (race.stravaPolyline && visibleMaps().has(race.id!)) {
               <tr>
                 <td [attr.colspan]="columns.length + 2">
                   <app-route-map [polyline]="race.stravaPolyline" />
@@ -105,6 +108,7 @@ import { RouteMapComponent } from '../route-map/route-map.component';
     .btn { padding: 0.3rem 0.7rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 0.85rem; background: #16213e; color: #fff; }
     .btn-danger { background: #c0392b; }
     .btn-strava { background: #fc4c02; }
+    .btn-map { background: #27ae60; }
     .pagination { display: flex; align-items: center; gap: 1rem; margin-top: 1rem; justify-content: center; }
     .pagination button { padding: 0.4rem 1rem; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; background: #fff; }
     .pagination button:disabled { opacity: 0.4; cursor: default; }
@@ -123,6 +127,7 @@ export class RaceListComponent implements OnInit {
   filterActivityType = signal('');
   filterCategory = signal('');
   filterMedal = signal('');
+  visibleMaps = signal(new Set<number>());
 
   activityTypes = ACTIVITY_TYPES;
   categories = RACE_CATEGORIES;
@@ -169,4 +174,10 @@ export class RaceListComponent implements OnInit {
   activityTypeLabel(val: string) { return this.activityTypes.find(t => t.value === val)?.label ?? val ?? ''; }
   categoryLabel(val: string) { return this.categories.find(c => c.value === val)?.label ?? val; }
   medalLabel(val: string) { return this.medalTypes.find(m => m.value === val)?.label ?? val ?? ''; }
+
+  toggleMap(id: number) {
+    const s = new Set(this.visibleMaps());
+    s.has(id) ? s.delete(id) : s.add(id);
+    this.visibleMaps.set(s);
+  }
 }
