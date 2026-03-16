@@ -8,6 +8,7 @@ import com.zelus.entity.StravaToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
@@ -19,7 +20,9 @@ import java.util.List;
 public class StravaService {
 
     private static final Logger LOG = Logger.getLogger(StravaService.class);
-    private static final String REDIRECT_URI = "http://localhost:8080/zelus/api/strava/callback";
+
+    @ConfigProperty(name = "strava.redirect-uri")
+    String redirectUri;
 
     @Inject @RestClient
     StravaClient client;
@@ -31,7 +34,7 @@ public class StravaService {
         StravaToken t = StravaToken.getOrCreate();
         return "https://www.strava.com/oauth/authorize" +
                 "?client_id=" + t.clientId +
-                "&redirect_uri=" + REDIRECT_URI +
+                "&redirect_uri=" + redirectUri +
                 "&response_type=code" +
                 "&approval_prompt=auto" +
                 "&scope=read,activity:read_all";
