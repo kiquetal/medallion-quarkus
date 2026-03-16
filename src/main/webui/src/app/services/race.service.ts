@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Race, Stats } from '../models/race.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RaceService {
   private http = inject(HttpClient);
-  private base = '/zelus/api';
+  private base = `${environment.apiUrl}/zelus/api`;
 
   list(params: { page?: number; size?: number; sort?: string; activityType?: string; category?: string; medalType?: string; name?: string } = {}): Observable<Race[]> {
     let httpParams = new HttpParams();
