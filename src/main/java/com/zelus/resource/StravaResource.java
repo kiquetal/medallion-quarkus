@@ -5,6 +5,7 @@ import com.zelus.entity.StravaToken;
 import com.zelus.strava.StravaActivityDTO;
 import com.zelus.strava.StravaService;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -27,6 +28,7 @@ public class StravaResource {
     }
 
     @GET @Path("/authorize")
+    @Transactional
     public Response authorize() {
         return Response.temporaryRedirect(URI.create(stravaService.buildAuthorizeUrl())).build();
     }
@@ -39,6 +41,7 @@ public class StravaResource {
     }
 
     @GET @Path("/status")
+    @Transactional
     public Map<String, Object> status() {
         StravaToken t = StravaToken.getOrCreate();
         return Map.of(
@@ -50,6 +53,7 @@ public class StravaResource {
     }
 
     @GET @Path("/data")
+    @Transactional
     public Map<String, Object> data() {
         StravaCache c = StravaCache.getOrCreate();
         return Map.of(
@@ -60,6 +64,7 @@ public class StravaResource {
     }
 
     @GET @Path("/activities")
+    @Transactional
     public List<StravaActivityDTO> activities() {
         return stravaService.getCachedActivities();
     }
